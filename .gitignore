@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime
+dist/
+build/
+coverage/
+
+# Vite
+client/dist
+
+# Uploads
+server/src/uploads/*
+!server/src/uploads/.gitkeep
+
+server/src/temp/*
+!server/src/temp/.gitkeep
+
+# Prisma
+server/prisma/dev.db
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
