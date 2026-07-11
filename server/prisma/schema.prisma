@@ -1,13 +1,130 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Language {
+  JAVASCRIPT
+  TYPESCRIPT
+  PYTHON
+  JAVA
+  CPP
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+}
+enum ReviewStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+
+  projects  Project[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  name        String
+  language    Language
+
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reviews     Review[]
+
+  createdAt   DateTime   @default(now())
+}
+
+model Review {
+  id            String          @id @default(cuid())
+
+  sourceCode    String          @db.Text
+
+  overallScore  Int
+
+  summary       String          @db.Text
+
+  aiModel       String
+
+  projectId      String
+  project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  findings      ReviewFinding[]
+
+  staticIssues  StaticIssue[]
+
+  metrics       ReviewMetric?
+
+  createdAt     DateTime        @default(now())
+
+  status ReviewStatus @default(PENDING)
+}
+
+model ReviewFinding {
+  id            String      @id @default(cuid())
+
+  severity      Severity
+
+  issue         String
+
+  explanation   String       @db.Text
+
+  suggestedFix  String       @db.Text
+
+  lineNumber    Int?
+
+  reviewId      String
+
+  review        Review       @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+model StaticIssue {
+  id          String      @id @default(cuid())
+
+  tool        String
+
+  severity    Severity
+
+  message     String
+
+  lineNumber  Int?
+
+  reviewId    String
+
+  review      Review      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+model ReviewMetric {
+  id                    String    @id @default(cuid())
+
+  complexity            Int
+
+  maintainability       Int
+
+  securityScore         Int
+
+  performanceScore      Int
+
+  readabilityScore      Int
+
+  reviewId              String    @unique
+
+  review                Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
