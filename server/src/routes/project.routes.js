@@ -3,6 +3,9 @@ const express = require("express");
 const router = express.Router();
 
 const auth = require("../middleware/auth.middleware");
+const validate = require("../middleware/validate.middleware");
+
+const { projectSchema } = require("../validators/project.validator");
 
 const {
   createProject,
@@ -12,32 +15,16 @@ const {
   deleteProject,
 } = require("../controllers/project.controller");
 
-const validate = require("../middleware/validate.middleware");
-const {
-  projectSchema,
-} = require("../validators/project.validator");
-
-router.post(
-  "/",
-  validate(projectSchema),
-  createProject
-);
-
-router.put(
-  "/:id",
-  validate(projectSchema),
-  updateProject
-);
-
+// Protect all routes
 router.use(auth);
 
-router.post("/", createProject);
+router.post("/", validate(projectSchema), createProject);
 
 router.get("/", getProjects);
 
 router.get("/:id", getProject);
 
-router.put("/:id", updateProject);
+router.put("/:id", validate(projectSchema), updateProject);
 
 router.delete("/:id", deleteProject);
 
