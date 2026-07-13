@@ -5,6 +5,7 @@ const router = express.Router();
 router.use("/auth", require("./auth.routes"));
 router.use("/projects", require("./project.routes"));
 router.use("/reviews", require("./review.routes"));
+router.use("/dashboard", require("./dashboard.routes"));
 
 router.get("/health", (req, res) => {
   res.json({
